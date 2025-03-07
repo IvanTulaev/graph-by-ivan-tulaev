@@ -1,5 +1,3 @@
-import {N} from "vite/dist/node/moduleRunnerTransport.d-CXw_Ws6P";
-
 interface IEdge<N> {
     source: N
     target: N
@@ -11,21 +9,21 @@ type GetAdjacentElementsFunction<N> = (node: N, graph: Graph<N>) => Array<N>
 type SortNextElementsFunction<N> = (nodes: Array<N>) => Array<N>
 type GetStopConditionFunction = (...args: any[]) => boolean
 
-interface INextElements<N> {
-    // for dfs
-    pop: () => N
-    push: (node: N) => number
-
-    // for bfs
-    shift: () => N
-    unshift: (node: N) => number
-}
-
-interface IVisited<N> {
-    has: () => boolean
-    add: (node: N) => Set<N>
-    delete: (node: N) => boolean
-}
+// interface INextElements<N> {
+//     // for dfs
+//     pop: () => N
+//     push: (node: N) => number
+//
+//     // for bfs
+//     shift: () => N
+//     unshift: (node: N) => number
+// }
+//
+// interface IVisited<N> {
+//     has: () => boolean
+//     add: (node: N) => Set<N>
+//     delete: (node: N) => boolean
+// }
 
 interface IAdjacencyValueElement<N>{
     incoming: Set<IEdge<N>>, outgoing: Set<IEdge<N>>
