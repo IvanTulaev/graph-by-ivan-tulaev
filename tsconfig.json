@@ -4,6 +4,7 @@
     "useDefineForClassFields": true,
     "module": "esnext",
     "lib": ["ESNext"],
+    "declaration": true,
     "skipLibCheck": true,
 
     /* Bundler mode */
