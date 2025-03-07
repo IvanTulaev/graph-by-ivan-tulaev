@@ -1,16 +1,23 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "isolatedModules": true,
+    /*"skipLibCheck": true, */
     "useDefineForClassFields": true,
+
+    /*не используется vite*/
+    "target": "ESNext",
+
+
+
     "module": "esnext",
     "lib": ["ESNext"],
     "declaration": true,
-    "skipLibCheck": true,
+
 
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "isolatedModules": true,
+
     "moduleDetection": "force",
     "noEmit": true,
 
@@ -21,5 +28,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["lib"]
 }
