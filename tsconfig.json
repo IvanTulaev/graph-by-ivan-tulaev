@@ -1,32 +1,33 @@
 {
   "compilerOptions": {
-    "isolatedModules": true,
-    /*"skipLibCheck": true, */
-    "useDefineForClassFields": true,
-
-    /*не используется vite*/
+    "rootDir": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@@/*": ["./*"],
+    },
     "target": "ESNext",
-
-
-
-    "module": "esnext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
     "lib": ["ESNext"],
-    "declaration": true,
-
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-
-    "moduleDetection": "force",
-    "noEmit": true,
-
-    /* Linting */
+    "moduleResolution": "Node10",
     "strict": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["vite/client", "node"],
+    "declaration": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["lib"]
+  "include": ["lib"],
+  "exclude": ["**/*.test.ts", "node_modules", "test/**", ".history/**"]
 }
