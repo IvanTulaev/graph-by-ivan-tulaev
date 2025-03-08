@@ -3,27 +3,11 @@ interface IEdge<N> {
     target: N
 }
 
-type GetStartElementFunction<N> = (nodes: Array<N>) => N
+type GetStartElementFunction<N> = (visited: Set<N>, initialGraph: Graph<N>) => N | undefined
+type GetNextFromExecutionSequence<N> = (executionSequence: Array<N>) => N
 type ExecuteCurrentFunction<N> = (node: N) => void
-type GetAdjacentElementsFunction<N> = (node: N, graph: Graph<N>) => Array<N>
-type SortNextElementsFunction<N> = (nodes: Array<N>) => Array<N>
-type GetStopConditionFunction = (...args: any[]) => boolean
-
-// interface INextElements<N> {
-//     // for dfs
-//     pop: () => N
-//     push: (node: N) => number
-//
-//     // for bfs
-//     shift: () => N
-//     unshift: (node: N) => number
-// }
-//
-// interface IVisited<N> {
-//     has: () => boolean
-//     add: (node: N) => Set<N>
-//     delete: (node: N) => boolean
-// }
+type GetNextNodesFunction<N> = (node: N, graph: Graph<N>, visited: Set<N>) => Array<N> | undefined
+type AddNextNodesToExecutionSequence<N> = (nodes: Array<N>, executionSequence: Array<N>) => void;
 
 interface IAdjacencyValueElement<N>{
     incoming: Set<IEdge<N>>, outgoing: Set<IEdge<N>>
@@ -33,7 +17,6 @@ export class Graph<N> {
 
     notDirected: boolean
     private _adjacencyList: Map<N, IAdjacencyValueElement<N>>
-
 
     constructor(notDirected: boolean) {
         this.notDirected = notDirected
@@ -112,29 +95,30 @@ export class Graph<N> {
     }
 
     /**
-     * @param isBfs
      * @param getStartElement
+     * @param getNextFromExecutionSequence
      * @param executeCurrent
-     * @param getAdjacentElements
-     * @param sortNextElements
-     * @param getStopCondition
+     * @param getNextNodes will be sorted
+     * @param addNextNodesToExecutionSequence
+     // * @param sortNextElements
+     // * @param getStopCondition
      */
-    traversal(
-        isBfs: boolean,
+    genericTraversing(
         getStartElement?: GetStartElementFunction<N>,
+        getNextFromExecutionSequence?: GetNextFromExecutionSequence<N>,
         executeCurrent?: ExecuteCurrentFunction<N>,
-        getAdjacentElements?: GetAdjacentElementsFunction<N>,
-        sortNextElements?: SortNextElementsFunction<N>,
-        getStopCondition?: GetStopConditionFunction
+        getNextNodes?: GetNextNodesFunction<N>,
+        addNextNodesToExecutionSequence?: AddNextNodesToExecutionSequence<N>,
     ) {
 
-        const initialNodes = this.nodes
         const visited = new Set<N>()
 
-        while (getStopCondition ? getStopCondition() : this._defaultGetStopCondition(visited, initialNodes)) {
+        while (visited.size < this.nodes.length) {
+
+            // undefined next start will be stop iteration
             const nextStart = getStartElement ?
-                getStartElement(this._notVisitedNodes(initialNodes, visited)) :
-                this._defaultGetStartElement(initialNodes, visited);
+                getStartElement(visited, this) :
+                this._defaultGetStartElement(visited);
 
             // end traversal if no nextNode
             if (!nextStart) break;
@@ -144,56 +128,63 @@ export class Graph<N> {
 
             while (executionSequence.length > 0) {
 
-                // push or pop
-                const currentNode = executionSequence.pop()
+                const currentNode = getNextFromExecutionSequence ?
+                    getNextFromExecutionSequence(executionSequence) :
+                    this._defaultGetNextFromExecutionSequence(executionSequence)
 
-                if (!currentNode) throw new Error(`Can't get current node in ${executionSequence}`)
-
-                visited.add(currentNode)
+                if (!currentNode) throw new Error(`Can't get current node from ${executionSequence}`)
 
                 // execute currentNode
+                visited.add(currentNode)
                 if (executeCurrent) executeCurrent(currentNode)
 
-                // get adjacent nodes for next iteration
-                const nextNodes = getAdjacentElements ? getAdjacentElements(currentNode, this) : this._defaultGetAdjacentElements(currentNode, this)
+                // get nodes for next iteration
+                // TODO: need stop iteration: example for traverse check
+                const nextNodes = getNextNodes ?
+                    getNextNodes(currentNode, this, visited) :
+                    this._defaultGetNextNodes(currentNode)
 
-                const notVisitedNextNodes = nextNodes.filter(node => !visited.has(node))
+                //stop iteration if nextNodes === undefined
+                // TODO: stop two levels of iteration!
+                if (!nextNodes) break;
 
-                const sortedNextNodes = sortNextElements ? sortNextElements(notVisitedNextNodes) : this._defaultSortNextElements(notVisitedNextNodes)
-
-                if (isBfs) {
-                    executionSequence.splice(0, 0, ...sortedNextNodes)
+                if (addNextNodesToExecutionSequence) {
+                    addNextNodesToExecutionSequence(nextNodes, executionSequence)
                 }else {
-                    executionSequence.splice(executionSequence.length, 0, ...sortedNextNodes)
+                    this._defaultAddNextNodesToExecutionSequence(nextNodes, executionSequence)
                 }
-
-                const stopCondition = getStopCondition ? getStopCondition() : this._defaultGetStopCondition(visited, initialNodes)
-                if (!stopCondition) break;
             }
         }
     }
 
-    _defaultGetStartElement(nodes: Array<N>, visited: Set<N>) {
-        return nodes.find(item => !visited.has(item))
+    static initFromGraph<N>(graph: Graph<N>) {
+        const newGraph = new Graph<N>(false)
+        for (const node of graph.nodes) {
+            newGraph.addNode(node)
+        }
+        for (const edge of graph.edges) {
+            newGraph.addEdge(edge)
+        }
+        return newGraph
     }
 
-    _notVisitedNodes(nodes: Array<N>, visited: Set<N>) {
-        return nodes.filter(item => !visited.has(item))
+    //  GetStartElementFunction<N>
+    _defaultGetStartElement(visited: Set<N>) {
+        return this.nodes.find(item => !visited.has(item))
     }
 
-
-    _defaultGetAdjacentElements(node: N, graph: Graph<N>) {
-        return [...graph.getOutgoingEdgesFor(node)].map(edge => edge.target)
+    // GetNextFromExecutionSequence
+    _defaultGetNextFromExecutionSequence(executionSequence: Array<N>){
+        return executionSequence.pop()
     }
 
-    _defaultSortNextElements(nodes: Array<N>) {
-
-        // return unsorted by default
-        return nodes
+    _defaultGetNextNodes(node: N) {
+        return [...this.getOutgoingEdgesFor(node)].map(edge => edge.target)
     }
 
-    _defaultGetStopCondition(visited: Set<N>, initialNodes: Array<N>){
-        return initialNodes.length > visited.size
+    _defaultAddNextNodesToExecutionSequence(nodes: Array<N>, executionSequence: Array<N>) {
+        // default is DFS with all elements
+        executionSequence.splice(executionSequence.length, 0, ...nodes)
     }
 
 }
