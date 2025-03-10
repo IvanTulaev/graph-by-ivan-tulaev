@@ -2,11 +2,11 @@
 Graph library for traversing and processing any directional graphs.
 
 ## Description
- - Working with direction graphs.
- - Has utility functions for elements CRUD (nodes & edges)
+ - Working with **direction graphs**.
+ - Has utility functions for **elements CRUD** operations (nodes & edges)
  - Customise graph traversing with **genericTraversing**
  - Get independent sub-graphs with **getSeparatedGraphs**
- - Check if there is a path between two nodes in different directions with *isNodeTraced*
+ - Check if there is a path between two nodes in different directions with **isNodeTraced**
  - Has some popular functions for customisation traversing in [traversingFunctions](lib/traversingFunctions)
 
 ## Traverse customisation
@@ -30,7 +30,7 @@ Use **genericTraversing** in [Graph class](lib/Graph.ts) for create your own gra
    - for current node processing
 
 ### examples
-For callbacks examples you can check getSeparatedGraphs() and isNodeTraced() in [Graph class](lib/Graph.ts)
+For callbacks examples you can check **getSeparatedGraphs()** and **isNodeTraced()** in [Graph class](lib/Graph.ts)
 
 
 ## License
