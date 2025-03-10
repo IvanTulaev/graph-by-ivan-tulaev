@@ -29,5 +29,5 @@
     "noUncheckedSideEffectImports": true
   },
   "include": ["lib"],
-  "exclude": ["**/*.test.ts", "node_modules", "test/**", ".history/**"]
+  "exclude": ["**/*.test.ts", "node_modules", "test/**", "lib/tests", ".history/**"]
 }

@@ -1,3 +1,8 @@
+import {getFirstUnvisited} from "@@/lib/traversingFunctions/getStartElement.js";
+import {getLast} from "@@/lib/traversingFunctions/getCurrentNodeForExecution.js";
+import {addToEnd} from "@@/lib/traversingFunctions/addToExecutionSequence.js";
+import {getNotVisitedIncomingNodes, getNotVisitedOutgoingNodes} from "@@/lib/traversingFunctions/getNextNodes.js";
+
 interface IEdge<N> {
     source: N
     target: N
@@ -18,7 +23,7 @@ export class Graph<N> {
     notDirected: boolean
     private _adjacencyList: Map<N, IAdjacencyValueElement<N>>
 
-    constructor(notDirected: boolean) {
+    constructor(notDirected: boolean = false) {
         this.notDirected = notDirected
         this._adjacencyList = new Map<N, IAdjacencyValueElement<N>>()
     }
@@ -102,8 +107,6 @@ export class Graph<N> {
      * @param getNextNodes will be sorted
      * @param addNextNodesToExecutionSequence
      * @param executeCurrent
-     // * @param sortNextElements
-     // * @param getStopCondition
      */
     genericTraversing(
         getStartElement: GetStartElementFunction<N>,
@@ -118,9 +121,6 @@ export class Graph<N> {
         while (visited.size < this.nodes.length) {
 
             // undefined next start will be stop iteration
-            // const nextStart = getStartElement ?
-            //     getStartElement(visited, this) :
-            //     this._defaultGetStartElement(visited);
             const nextStart = getStartElement(visited, this)
 
             // end traversal if no nextNode
@@ -131,33 +131,21 @@ export class Graph<N> {
 
             while (executionSequence.length > 0) {
 
-                // const currentNode = getNextFromExecutionSequence ?
-                //     getNextFromExecutionSequence(executionSequence) :
-                //     this._defaultGetNextFromExecutionSequence(executionSequence)
                 const currentNode = getNextFromExecutionSequence(executionSequence)
 
                 if (!currentNode) throw new Error(`Can't get current node from ${executionSequence}`)
 
+                if (executeCurrent) executeCurrent(currentNode)
                 // execute currentNode
                 visited.add(currentNode)
-                if (executeCurrent) executeCurrent(currentNode)
 
                 // get nodes for next iteration
                 // TODO: need stop iteration: example for traverse check
-                // const nextNodes = getNextNodes ?
-                //     getNextNodes(currentNode, this, visited) :
-                //     this._defaultGetNextNodes(currentNode)
                 const nextNodes = getNextNodes(currentNode, this, visited)
 
                 //stop iteration if nextNodes === undefined
                 // TODO: stop two levels of iteration!
                 if (!nextNodes) break;
-
-                // if (addNextNodesToExecutionSequence) {
-                //     addNextNodesToExecutionSequence(nextNodes, executionSequence)
-                // }else {
-                //     this._defaultAddNextNodesToExecutionSequence(nextNodes, executionSequence)
-                // }
 
                 addNextNodesToExecutionSequence(nextNodes, executionSequence)
 
@@ -168,18 +156,8 @@ export class Graph<N> {
     // TODO: ADD OPTIMISATION
     getSeparatedGraphs(){
         const separatedGraphs = new Set<Graph<N>>()
-        // const localVisited = new Set<N>()
 
-        const getRandomStart = (visited: Set<N>, initialGraph: Graph<N>) => {
-            return initialGraph.nodes.find(item => !visited.has(item))
-        }
-
-        const getFirstFromExecutionSequence = (executionSequence: Array<N>) => {
-            return executionSequence.pop()
-        }
-
-        const getAllNotVisitedAdjacentNodes = (node: N, graph: Graph<N>, visited: Set<N>) => {
-
+        const getLocalGraph = (node: N, graph: Graph<N>) => {
             const outgoingEdges = graph.getOutgoingEdgesFor(node)
             const outgoingNodes = [...outgoingEdges].map(edge => edge.target)
             const incomingEdges = graph.getIncomingEdgesFor(node)
@@ -199,6 +177,10 @@ export class Graph<N> {
                 localGraph.addEdge(localEdge)
             }
 
+            return localGraph
+        }
+
+        const getGraphsToMerge = (separatedGraphs: Set<Graph<N>>, localGraph: Graph<N>) => {
             // проверяем есть ли пересечение по вершинам с графами в separatedGraphs
             // Обработка тех что уже ест в графах
             const graphsToMerge = new Set<Graph<N>>()
@@ -213,6 +195,16 @@ export class Graph<N> {
                 }
             }
 
+            return graphsToMerge
+        }
+
+        const getAllNotVisitedAdjacentNodes = (node: N, graph: Graph<N>, visited: Set<N>) => {
+
+            // Получаем локальный граф состоящий из обрабатываемой вершины и всех с ней смежных вершин
+            const localGraph = getLocalGraph(node, graph)
+
+            const graphsToMerge = getGraphsToMerge (separatedGraphs, localGraph)
+
             if (graphsToMerge.size > 0) {
                 for (const graphToMerge of graphsToMerge) {
                     separatedGraphs.delete(graphToMerge)
@@ -223,19 +215,51 @@ export class Graph<N> {
                 separatedGraphs.add(localGraph)
             }
 
-            return [...allNodes].filter(item => !visited.has(item))
+            return [...localGraph.nodes].filter(item => !visited.has(item))
 
         }
 
-        const pushToExecution = (nodes: Array<N>, executionSequence: Array<N>) => {
-            for (const node of nodes) {
-                executionSequence.push(node)
-            }
-        }
 
-        this.genericTraversing(getRandomStart, getFirstFromExecutionSequence, getAllNotVisitedAdjacentNodes, pushToExecution )
+        this.genericTraversing(getFirstUnvisited<N>, getLast<N>, getAllNotVisitedAdjacentNodes, addToEnd<N> )
 
         return [...separatedGraphs]
+    }
+
+    // TODO: ADD OPTIMISATION for self loop
+    isNodeTraced(node:N, to: N | Array<N>, backward: boolean = false){
+
+        let isTraced = false
+
+        const checkedEnds = [to].flat()
+
+        const getStart =  (visited: Set<N>) => {
+
+            return !visited.has(node) ?  node : undefined
+
+        }
+
+        const execCurrent = (curNode: N) => {
+            if (node === curNode && checkedEnds.includes(curNode)) isTraced = true
+        }
+
+        const getNext = (node: N, graph: Graph<N>, visited: Set<N>) => {
+
+            const notVisited = !backward ?
+                getNotVisitedOutgoingNodes(node, graph, visited) :
+                getNotVisitedIncomingNodes(node, graph, visited)
+
+            if (notVisited.some(notVisitedNode => checkedEnds.includes(notVisitedNode))) {
+                isTraced = true
+                return
+            }
+
+            return notVisited
+        }
+
+        // todo: add node or function
+        this.genericTraversing(getStart, getLast<N>, getNext, addToEnd, execCurrent)
+
+        return isTraced
     }
 
     static mergeGraphs<N>(graphs: Set<Graph<N>>){
@@ -253,36 +277,4 @@ export class Graph<N> {
 
         return resultGraph
     }
-
-    // TODO: It's a merge
-    static initFromGraph<N>(graph: Graph<N>) {
-        const newGraph = new Graph<N>(false)
-        for (const node of graph.nodes) {
-            newGraph.addNode(node)
-        }
-        for (const edge of graph.edges) {
-            newGraph.addEdge(edge)
-        }
-        return newGraph
-    }
-
-    // //  GetStartElementFunction<N>
-    // _defaultGetStartElement(visited: Set<N>) {
-    //     return this.nodes.find(item => !visited.has(item))
-    // }
-    //
-    // // GetNextFromExecutionSequence
-    // _defaultGetNextFromExecutionSequence(executionSequence: Array<N>){
-    //     return executionSequence.pop()
-    // }
-    //
-    // _defaultGetNextNodes(node: N) {
-    //     return [...this.getOutgoingEdgesFor(node)].map(edge => edge.target)
-    // }
-    //
-    // _defaultAddNextNodesToExecutionSequence(nodes: Array<N>, executionSequence: Array<N>) {
-    //     // default is DFS with all elements
-    //     executionSequence.splice(executionSequence.length, 0, ...nodes)
-    // }
-
 }

@@ -1,7 +1,7 @@
 {
   "name": "graph-by-ivan-tulaev",
-  "version": "0.0.8",
-  "description": "Graph utils",
+  "version": "1.0.0-alpha.1",
+  "description": "Graph library for traversing and processing any directional graphs.",
   "private": false,
   "type": "module",
   "exports": {
@@ -26,7 +26,8 @@
   "keywords": [
     "graph",
     "dfs",
-    "bfs"
+    "bfs",
+    "traversing"
   ],
   "author": {
     "name": "Ivan Tulaev",
@@ -39,6 +40,7 @@
   "homepage": "https://github.com/IvanTulaev/graph#readme",
   "devDependencies": {
     "@types/node": "^22.13.9",
+    "rollup-plugin-license": "^3.6.0",
     "typescript": "~5.7.2",
     "vite": "^6.2.0",
     "vite-plugin-dts": "^4.5.3"

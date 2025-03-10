@@ -1,6 +1,7 @@
 import path from "path";
 import { defineConfig } from "vite";
 import dts from 'vite-plugin-dts'
+import license from 'rollup-plugin-license'
 import packageJson from "./package.json";
 
 const getPackageName = () => {
@@ -33,7 +34,17 @@ export default defineConfig({
             fileName: format => fileName[format],
         },
     },
-    plugins: [dts({ rollupTypes: true })],
+    plugins: [
+        dts({ rollupTypes: true }),
+        license({
+            banner: {
+                commentStyle: "ignored",
+                content: {
+                    file: 'LICENSE',
+                }
+            }
+        })
+    ],
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "lib"),
