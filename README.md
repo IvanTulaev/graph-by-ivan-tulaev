@@ -2,7 +2,7 @@
 Graph library for traversing and processing any directional graphs.
 
 ## Description
- - Working with **direction graphs**.
+ - Working with **directional graphs**.
  - Has utility functions for **elements CRUD** operations (nodes & edges)
  - Customise graph traversing with **genericTraversing**
  - Get independent sub-graphs with **getSeparatedGraphs**
