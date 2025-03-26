@@ -3,16 +3,16 @@ import {getLast} from "@@/lib/traversingFunctions/getCurrentNodeForExecution.js"
 import {addToEnd} from "@@/lib/traversingFunctions/addToExecutionSequence.js";
 import {getNotVisitedIncomingNodes, getNotVisitedOutgoingNodes} from "@@/lib/traversingFunctions/getNextNodes.js";
 
-interface IEdge<N> {
+export interface IEdge<N> {
     source: N
     target: N
 }
 
-type GetStartElementFunction<N> = (visited: Set<N>, initialGraph: Graph<N>) => N | undefined
-type GetNextFromExecutionSequence<N> = (executionSequence: Array<N>) => N | undefined
-type ExecuteCurrentFunction<N> = (node: N) => void
-type GetNextNodesFunction<N> = (node: N, graph: Graph<N>, visited: Set<N>) => Array<N> | undefined
-type AddNextNodesToExecutionSequence<N> = (nodes: Array<N>, executionSequence: Array<N>) => void;
+export type GetStartElementFunction<N> = (visited: Set<N>, initialGraph: Graph<N>) => N | undefined
+export type GetNextFromExecutionSequence<N> = (executionSequence: Array<N>) => N | undefined
+export type ExecuteCurrentFunction<N> = (node: N) => void
+export type GetNextNodesFunction<N> = (node: N, graph: Graph<N>, visited: Set<N>) => Array<N> | undefined
+export type AddNextNodesToExecutionSequence<N> = (nodes: Array<N>, executionSequence: Array<N>) => void;
 
 interface IAdjacencyValueElement<N>{
     incoming: Set<IEdge<N>>, outgoing: Set<IEdge<N>>
