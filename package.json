@@ -1,6 +1,6 @@
 {
   "name": "graph-by-ivan-tulaev",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "Graph library for traversing and processing any directional graphs.",
   "private": false,
   "type": "module",
