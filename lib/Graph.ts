@@ -11,7 +11,7 @@ export interface IEdge<N> {
 export type GetStartElementFunction<N> = (visited: Set<N>, initialGraph: Graph<N>) => N | undefined
 export type GetNextFromExecutionSequence<N> = (executionSequence: Array<N>) => N | undefined
 export type ExecuteCurrentFunction<N> = (node: N) => void
-export type GetNextNodesFunction<N> = (node: N, graph: Graph<N>, visited: Set<N>) => Array<N> | undefined
+export type GetNextNodesFunction<N> = (node: N, graph: Graph<N>, visited: Set<N>, executionSequence: Array<N>) => Array<N> | undefined
 export type AddNextNodesToExecutionSequence<N> = (nodes: Array<N>, executionSequence: Array<N>) => void;
 
 interface IAdjacencyValueElement<N>{
@@ -141,7 +141,7 @@ export class Graph<N> {
 
                 // get nodes for next iteration
                 // TODO: need stop iteration: example for traverse check
-                const nextNodes = getNextNodes(currentNode, this, visited)
+                const nextNodes = getNextNodes(currentNode, this, visited, executionSequence)
 
                 //stop iteration if nextNodes === undefined
                 // TODO: stop two levels of iteration!
