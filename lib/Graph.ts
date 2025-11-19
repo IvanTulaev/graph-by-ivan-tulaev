@@ -46,7 +46,7 @@ export class Graph<N> {
             const allEdges = new Set ([...incoming, ...outgoing])
 
             for (const edge of allEdges) {
-                if (edge.source !== node && edge.source !== node) continue;
+                if (edge.source !== node && edge.target !== node) continue;
                 incoming.delete(edge)
                 outgoing.delete(edge)
             }
