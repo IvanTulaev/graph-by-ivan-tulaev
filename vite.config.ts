@@ -27,6 +27,7 @@ export default defineConfig({
     base: "./",
     build: {
         outDir: "./dist",
+        minify: false,
         lib: {
             entry: path.resolve(__dirname, "lib/index.ts"),
             name: getPackageNameCamelCase(),
