@@ -28,6 +28,15 @@ export default defineConfig({
     build: {
         outDir: "./dist",
         minify: false,
+        rollupOptions: {
+            // Убедитесь, что все экспорты сохраняются
+            treeshake: false,
+            output: {
+                exports: 'named',
+                minifyInternalExports: false,
+                preserveModules: false
+            }
+        },
         lib: {
             entry: path.resolve(__dirname, "lib/index.ts"),
             name: getPackageNameCamelCase(),
@@ -36,7 +45,11 @@ export default defineConfig({
         },
     },
     plugins: [
-        dts({ rollupTypes: true }),
+        dts({
+            rollupTypes: true,
+            include: ['lib/**/*.ts'],
+            entryRoot: 'lib'
+        }),
         license({
             banner: {
                 commentStyle: "ignored",
