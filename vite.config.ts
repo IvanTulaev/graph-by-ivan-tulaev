@@ -29,7 +29,6 @@ export default defineConfig({
         outDir: "./dist",
         minify: false,
         rollupOptions: {
-            // Убедитесь, что все экспорты сохраняются
             treeshake: false,
             output: {
                 exports: 'named',
