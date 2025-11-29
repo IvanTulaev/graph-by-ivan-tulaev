@@ -152,6 +152,18 @@ export class Graph<N> {
         }
     }
 
+    createCopy(){
+        const newGraph = new Graph()
+        for (const node of this.nodes){
+            newGraph.addNode(node)
+        }
+        for (const edge of this.edges){
+            newGraph.addEdge(edge)
+        }
+
+        return newGraph
+    }
+
     // TODO: ADD OPTIMISATION
     getSeparatedGraphs(){
         const separatedGraphs = new Set<Graph<N>>()
@@ -180,6 +192,7 @@ export class Graph<N> {
         }
 
         const getGraphsToMerge = (separatedGraphs: Set<Graph<N>>, localGraph: Graph<N>) => {
+
             // проверяем есть ли пересечение по вершинам с графами в separatedGraphs
             // Обработка тех что уже ест в графах
             const graphsToMerge = new Set<Graph<N>>()
@@ -217,7 +230,6 @@ export class Graph<N> {
             return [...localGraph.nodes].filter(item => !visited.has(item))
 
         }
-
 
         this.genericTraversing(getFirstUnvisited<N>, getLast<N>, getAllNotVisitedAdjacentNodes, addToEnd<N> )
 
@@ -262,7 +274,7 @@ export class Graph<N> {
     }
 
     static mergeGraphs<N>(graphs: Set<Graph<N>>){
-        const resultGraph = new Graph<N>(false)
+        const resultGraph = new Graph<N>()
 
         for (const graph of graphs) {
             for (const node of graph.nodes) {
