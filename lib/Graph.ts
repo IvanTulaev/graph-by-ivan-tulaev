@@ -109,9 +109,9 @@ export class Graph<N> {
      * @param executeCurrent
      */
     genericTraversing(
+        getNextNodes: GetNextNodesFunction<N> = getNotVisitedOutgoingNodes,
         getStartElement: GetStartElementFunction<N> = getFirstUnvisited,
         getNextFromExecutionSequence: GetNextFromExecutionSequence<N> = getLast,
-        getNextNodes: GetNextNodesFunction<N> = getNotVisitedOutgoingNodes,
         addNextNodesToExecutionSequence: AddNextNodesToExecutionSequence<N> = addToEnd,
         executeCurrent?: ExecuteCurrentFunction<N>,
     ) {
@@ -231,7 +231,7 @@ export class Graph<N> {
 
         }
 
-        this.genericTraversing(getFirstUnvisited<N>, getLast<N>, getAllNotVisitedAdjacentNodes, addToEnd<N> )
+        this.genericTraversing(getAllNotVisitedAdjacentNodes, getFirstUnvisited<N>, getLast<N>, addToEnd<N> )
 
         return [...separatedGraphs]
     }
@@ -268,7 +268,7 @@ export class Graph<N> {
         }
 
         // todo: add node or function
-        this.genericTraversing(getStart, getLast<N>, getNext, addToEnd, execCurrent)
+        this.genericTraversing(getNext, getStart, getLast<N>, addToEnd, execCurrent)
 
         return isTraced
     }
