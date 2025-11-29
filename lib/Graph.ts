@@ -1,7 +1,7 @@
-import {getFirstUnvisited} from "@@/lib/traversingFunctions/getStartElement.js";
-import {getLast} from "@@/lib/traversingFunctions/getCurrentNodeForExecution.js";
-import {addToEnd} from "@@/lib/traversingFunctions/addToExecutionSequence.js";
-import {getNotVisitedIncomingNodes, getNotVisitedOutgoingNodes} from "@@/lib/traversingFunctions/getNextNodes.js";
+import {getFirstUnvisited} from "../lib/traversingFunctions/getStartElement";
+import {getLast} from "../lib/traversingFunctions/getCurrentNodeForExecution";
+import {addToEnd} from "../lib/traversingFunctions/addToExecutionSequence";
+import {getNotVisitedIncomingNodes, getNotVisitedOutgoingNodes} from "../lib/traversingFunctions/getNextNodes";
 
 export interface IEdge<N> {
     source: N
