@@ -102,17 +102,17 @@ export class Graph<N> {
     }
 
     /**
-     * @param getStartElement
-     * @param getNextFromExecutionSequence
-     * @param getNextNodes will be sorted
-     * @param addNextNodesToExecutionSequence
+     * @param getStartElement get first unvisited by default
+     * @param getNextFromExecutionSequence get last by default
+     * @param getNextNodes get not visited outgoing elements by default
+     * @param addNextNodesToExecutionSequence add to end by default
      * @param executeCurrent
      */
     genericTraversing(
-        getStartElement: GetStartElementFunction<N>,
-        getNextFromExecutionSequence: GetNextFromExecutionSequence<N>,
-        getNextNodes: GetNextNodesFunction<N>,
-        addNextNodesToExecutionSequence: AddNextNodesToExecutionSequence<N>,
+        getStartElement: GetStartElementFunction<N> = getFirstUnvisited,
+        getNextFromExecutionSequence: GetNextFromExecutionSequence<N> = getLast,
+        getNextNodes: GetNextNodesFunction<N> = getNotVisitedOutgoingNodes,
+        addNextNodesToExecutionSequence: AddNextNodesToExecutionSequence<N> = addToEnd,
         executeCurrent?: ExecuteCurrentFunction<N>,
     ) {
 
@@ -148,7 +148,6 @@ export class Graph<N> {
                 if (!nextNodes) break;
 
                 addNextNodesToExecutionSequence(nextNodes, executionSequence)
-
             }
         }
     }
