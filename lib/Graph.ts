@@ -102,10 +102,11 @@ export class Graph<N> {
     }
 
     /**
+     *
+     * @param getNextNodes get not visited outgoing elements by default
      * @param getStartElement get first unvisited by default
      * @param getNextFromExecutionSequence get last by default
-     * @param getNextNodes get not visited outgoing elements by default
-     * @param addNextNodesToExecutionSequence add to end by default
+     * @param addNextNodesToExecutionSequence  add to end by default
      * @param executeCurrent
      */
     genericTraversing(
