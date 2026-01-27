@@ -62,7 +62,7 @@ export class Graph<N> {
     addEdge(edge: IEdge<N>){
         const {source, target} = edge
 
-        if (!this._adjacencyList.has(source) || !this._adjacencyList.has(target)) throw new Error(`Cannot add adjacency: has no node ${source} or ${target}`)
+        if (!this._adjacencyList.has(source) || !this._adjacencyList.has(target)) throw new Error(`Cannot add edge: has no node ${JSON.stringify(source)} or ${JSON.stringify(target)}`)
 
         // add to incoming
         const incoming = this._adjacencyList.get(target)
