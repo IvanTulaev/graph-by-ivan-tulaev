@@ -1,6 +1,6 @@
 {
   "name": "graph-by-ivan-tulaev",
-  "version": "1.0.0-alpha.14",
+  "version": "1.0.0-alpha.15",
   "description": "Graph library for traversing and processing any directional graphs.",
   "private": false,
   "type": "module",
@@ -40,9 +40,9 @@
   "homepage": "https://github.com/IvanTulaev/graph#readme",
   "devDependencies": {
     "@types/node": "^22.13.9",
-    "rollup-plugin-license": "^3.6.0",
+    "rollup-plugin-license": "^3.7.0",
     "typescript": "~5.7.2",
-    "vite": "^7.1.11",
-    "vite-plugin-dts": "^4.5.3"
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4"
   }
 }
