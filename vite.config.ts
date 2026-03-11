@@ -1,5 +1,5 @@
 import path from "path";
-import { defineConfig } from "vite";
+import {defineConfig, LibraryFormats} from "vite";
 import dts from 'vite-plugin-dts'
 import license from 'rollup-plugin-license'
 import packageJson from "./package.json";
@@ -16,12 +16,12 @@ const getPackageNameCamelCase = () => {
     }
 };
 
-const fileName = {
+const fileName: Record<string, string> = {
     es: `index.js`,
     cjs: `index.cjs`,
 };
 
-const formats = Object.keys(fileName) as Array<keyof typeof fileName>;
+const formats = Object.keys(fileName) as LibraryFormats[];
 
 export default defineConfig({
     base: "./",
