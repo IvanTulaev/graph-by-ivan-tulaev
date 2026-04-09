@@ -166,7 +166,9 @@ export class Graph<N> {
     }
 
     // TODO: ADD OPTIMISATION
-    getSeparatedGraphs(){
+    getSeparatedGraphs( useExperimental: boolean ){
+        if (useExperimental) return this.getSeparatedGraphsExperimental()
+
         const separatedGraphs = new Set<Graph<N>>()
 
         const getLocalGraph = (node: N, graph: Graph<N>) => {
@@ -232,7 +234,56 @@ export class Graph<N> {
 
         }
 
-        this.genericTraversing(getAllNotVisitedAdjacentNodes, getFirstUnvisited<N>, getLast<N>, addToEnd<N> )
+        this.genericTraversing(getAllNotVisitedAdjacentNodes)
+
+        return [...separatedGraphs]
+    }
+
+    getSeparatedGraphsExperimental(){
+
+        const separatedGraphs: Graph<N>[] = []
+
+        const getAdjacentNodesAndEdges = (node: N, graph: Graph<N>) => {
+            const outgoingEdges = graph.getOutgoingEdgesFor(node)
+            const outgoingNodes = [...outgoingEdges].map(edge => edge.target)
+            const incomingEdges = graph.getIncomingEdgesFor(node)
+            const incomingNodes = [...incomingEdges].map(edge => edge.source)
+
+            const allEdges = new Set([...outgoingEdges,...incomingEdges])
+            const allNodes = new Set([...outgoingNodes,...incomingNodes])
+
+            return {nodes: allNodes, edges: allEdges}
+        }
+
+        const mainExecution = (node: N, graph: Graph<N>, visited: Set<N>, executionSequence: Array<N> ) => {
+            if (separatedGraphs.length === 0 ) {
+                const newGraph = new Graph<N>()
+                separatedGraphs.push(newGraph)
+            }
+
+            const newGraph = separatedGraphs[separatedGraphs.length - 1]
+            newGraph.addNode(node)
+
+            // Получаем локальный граф состоящий из обрабатываемой вершины и всех с ней смежных вершин
+            const { nodes, edges } = getAdjacentNodesAndEdges(node, graph)
+            const unvisitedNodes = [...nodes].filter(item => !visited.has(item))
+
+            for (const node of unvisitedNodes) {
+                newGraph.addNode(node)
+            }
+
+            for (const edge of edges) {
+                newGraph.addEdge(edge)
+            }
+
+            if (executionSequence.length === 0 && unvisitedNodes.length === 0 && visited.size < graph.nodes.length) {
+                separatedGraphs.push(new Graph<N>())
+            }
+
+            return unvisitedNodes
+        }
+
+        this.genericTraversing(mainExecution)
 
         return [...separatedGraphs]
     }
